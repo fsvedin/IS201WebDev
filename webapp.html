@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2.5em;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cell.taken {
+      cursor: not-allowed;
+    }
+
+    .cell.x {
+      color: #007BFF; /* Blue */
+    }
+
+    .cell.o {
+      color: #DC3545; /* Red */
+    }
+
+    .scoreboard {
+      margin-top: 20px;
+    }
+
+    .scoreboard p {
+      font-size: 1.2em;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .message {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #006400;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe: You vs Computer</h1>
+
+  <div class="board" id="board"></div>
+
+  <div class="message" id="message"></div>
+
+  <div class="scoreboard">
+    <p>You: <span id="playerScore">0</span> | Computer: <span id="computerScore">0</span> | Ties: <span id="ties">0</span></p>
+  </div>
+
+  <button onclick="resetGame()">Play Again</button>
+
+  <!-- Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const boardElement = document.getElementById('board');
+    const messageElement = document.getElementById('message');
+    const playerScoreElement = document.getElementById('playerScore');
+    const computerScoreElement = document.getElementById('computerScore');
+    const tiesElement = document.getElementById('ties');
+
+    let board = Array(9).fill('');
+    let isGameOver = false;
+    let playerScore = 0;
+    let computerScore = 0;
+    let ties = 0;
+
+    function renderBoard() {
+      boardElement.innerHTML = '';
+      board.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.classList.add('cell');
+        if (cell === 'X') cellElement.classList.add('x');
+        if (cell === 'O') cellElement.classList.add('o');
+        if (cell) {
+          cellElement.classList.add('taken');
+        }
+        cellElement.textContent = cell;
+        cellElement.addEventListener('click', () => playerMove(index));
+        boardElement.appendChild(cellElement);
+      });
+    }
+
+    function playerMove(index) {
+      if (board[index] || isGameOver) return;
+
+      board[index] = 'X';
+      renderBoard();
+
+      if (checkWin('X')) {
+        playerScore++;
+        endGame('You win!', true);
+        return;
+      }
+
+      if (board.every(cell => cell)) {
+        ties++;
+        endGame("It's a tie!");
+        return;
+      }
+
+      setTimeout(computerMove, 500);
+    }
+
+    function computerMove() {
+      let available = board.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+      if (available.length === 0 || isGameOver) return;
+
+      let choice = available[Math.floor(Math.random() * available.length)];
+      board[choice] = 'O';
+      renderBoard();
+
+      if (checkWin('O')) {
+        computerScore++;
+        endGame('Computer wins!');
+        return;
+      }
+
+      if (board.every(cell => cell)) {
+        ties++;
+        endGame("It's a tie!");
+      }
+    }
+
+    function checkWin(player) {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8], // rows
+        [0,3,6], [1,4,7], [2,5,8], // columns
+        [0,4,8], [2,4,6]           // diagonals
+      ];
+      return winPatterns.some(pattern => 
+        pattern.every(index => board[index] === player)
+      );
+    }
+
+    function endGame(msg, isPlayerWin = false) {
+      isGameOver = true;
+      messageElement.textContent = msg;
+      updateScoreboard();
+      if (isPlayerWin) {
+        launchConfetti();
+      }
+    }
+
+    function resetGame() {
+      board = Array(9).fill('');
+      isGameOver = false;
+      messageElement.textContent = '';
+      renderBoard();
+    }
+
+    function updateScoreboard() {
+      playerScoreElement.textContent = playerScore;
+      computerScoreElement.textContent = computerScore;
+      tiesElement.textContent = ties;
+    }
+
+    function launchConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
+    // Initialize
+    renderBoard();
+  </script>
+
+</body>
+</html>

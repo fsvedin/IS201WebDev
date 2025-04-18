@@ -1,0 +1,43 @@
+.container{
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+body{
+    background-color:aliceblue;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: black;
+}
+.header{
+    background-color: lightskyblue;
+    color: grey;
+    text-align:center;
+}
+.subheadings{
+    background-color: lightskyblue;
+    color: grey;
+   
+}
+.recipeheader{
+    background-color:lightskyblue;
+    color: grey;
+}
+
+
+body{
+   display: flex ;
+   justify-content: center;
+   align-items: flex-start;
+   min-height: 100vh;
+   margin: 0; 
+}
+
+ul,ol{
+    list-style-position:inside;
+    text-align: center;
+    padding-left:0;
+}
